@@ -1,7 +1,9 @@
 import jwt
 import datetime
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from typing import Dict
+from starlette import status
+
 from app.data.repositories.Repository import get_user, get_users
 from app.data.schemas.User import UserDto
 from constants import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, SCHEME, REFRESH_TOKEN_EXPIRE_MINUTES
@@ -36,6 +38,6 @@ def get_tokens_data(token: str = Depends(SCHEME)):
         print(data)
         return data.get("sub")
     except jwt.ExpiredSignatureError:
-        pass  # Обработка ошибки истечения срока действия токена
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="The token has expired")
     except jwt.InvalidTokenError:
-        pass  # Обработка ошибки недействительного токена
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Invalid token")
