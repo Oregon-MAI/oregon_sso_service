@@ -5,3 +5,7 @@ SECRET_KEY = "M&6u_hdJ-)Qvx:yGkN+2|1a917e3c181d9399a72327e00f78ff8a9992aeea|3ae3
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_MINUTES = 10080
+
+DB_URL = "postgresql+asyncpg://postgres:root@localhost:1234/postgres"
+
+ADMIN_USERNAME = "admin"
