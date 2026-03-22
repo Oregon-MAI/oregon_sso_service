@@ -1,9 +1,10 @@
 from uuid import uuid4
-from sqlalchemy.orm import relationship
-from sqlalchemy import UUID, Column, String, Text
 
-from app.data.models.UserRole import UserRole
+from sqlalchemy import UUID, Column, String, Text
+from sqlalchemy.orm import relationship
+
 from app.data.models.base import Base
+from app.data.models.user_role import UserRole
 
 
 class Role(Base):
@@ -13,6 +14,6 @@ class Role(Base):
     description = Column(Text, nullable=False)
     users = relationship("User",secondary=UserRole.__tablename__,back_populates="roles",cascade="all, delete")
 
-    def __init__(self, name: str, description: str):
+    def __init__(self, name: str, description: str) -> None:
         self.name = name
         self.description = description

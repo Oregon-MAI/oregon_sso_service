@@ -3,25 +3,26 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from app.data.schemas.Role import RoleCreateDto, RoleUpdateDto, RoleDeleteDto
-from app.services.SecurityService import get_tokens_data
-from app.services.RoleService import create_role, update_role, delete_role, get_roles, role as get_role
+from app.services.role_service import role as get_role
+from app.services.security_service import get_access_tokens_data
 
 router = APIRouter(prefix='')
 
-
+"""
 @router.get("/roles")
 async def roles(current_user: str = Depends(get_tokens_data)):
     logging.info('GET: /roles.')
     return await get_roles()
+"""
 
 
 @router.get("/role")
-async def roles(id: UUID, current_user: str = Depends(get_tokens_data)):
+async def roles(id: UUID, current_user: str = Depends(get_access_tokens_data)):
     logging.info('GET: /role.')
     return await get_role(id)
 
 
+"""
 @router.post("/create_role")
 async def create(new_role: RoleCreateDto, current_user: str = Depends(get_tokens_data)):
     logging.info('POST: /create_role.')
@@ -38,3 +39,4 @@ async def update(updated_role: RoleUpdateDto, current_user: str = Depends(get_to
 async def delete(deleted_role: RoleDeleteDto, current_user: str = Depends(get_tokens_data)):
     logging.info('DELETE: /delete_role.')
     return await delete_role(deleted_role, current_user)
+"""

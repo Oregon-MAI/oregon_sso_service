@@ -1,9 +1,11 @@
 from uuid import UUID
 
-from app.data.models.User import User
-from app.data.repositories.UserRepository import insert_user as insert, get_user, update_user as update, \
-    delete_user as delete, get_users
-from app.data.schemas.User import UserCreateDto, UserUpdateDto, UserDeleteDto
+from app.data.models.user import User
+from app.data.repositories.user_repository import delete_user as delete
+from app.data.repositories.user_repository import get_user, get_users
+from app.data.repositories.user_repository import insert_user as insert
+from app.data.repositories.user_repository import update_user as update
+from app.data.schemas.user import UserCreateDto, UserDeleteDto, UserUpdateDto
 from constants import ADMIN_USERNAME
 
 
@@ -28,8 +30,7 @@ async def create_user(user_in: UserCreateDto, current_user: str):
                 user.roles.append(role)
             await insert(user)
             return {"Info": user_in.dict()}
-        else:
-            return {"error": "you not have permission"}
+        return {"error": "you not have permission"}
     except Exception:
         return {"error": "something went wrong"}
 
@@ -40,8 +41,7 @@ async def update_user(user_in: UserUpdateDto, current_user: str):
         if any(role.name == ADMIN_USERNAME for role in list(auth_user.roles)):
             await update(user_in)
             return {"Info": user_in.dict()}
-        else:
-            return {"error": "you not have permission"}
+        return {"error": "you not have permission"}
     except Exception:
         return {"error": "something went wrong"}
 
@@ -52,7 +52,6 @@ async def delete_user(user_in: UserDeleteDto, current_user: str):
         if any(role.name == ADMIN_USERNAME for role in list(auth_user.roles)):
             await delete(user_in.id)
             return {"Info": user_in.dict()}
-        else:
-            return {"error": "you not have permission"}
+        return {"error": "you not have permission"}
     except Exception:
         return {"error": "something went wrong"}

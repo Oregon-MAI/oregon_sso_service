@@ -1,12 +1,13 @@
-from typing import List
 from uuid import uuid4
+
 from passlib.hash import pbkdf2_sha256
 from pydantic import EmailStr
-from sqlalchemy.orm import relationship, Mapped
 from sqlalchemy import UUID, Column, String
-from app.data.models.Role import Role
-from app.data.models.UserRole import UserRole
+from sqlalchemy.orm import Mapped, relationship
+
 from app.data.models.base import Base
+from app.data.models.role import Role
+from app.data.models.user_role import UserRole
 
 
 class User(Base):
@@ -18,9 +19,9 @@ class User(Base):
     first_name = Column(String(50))
     last_name = Column(String(50))
     email = Column(String(255))
-    roles: Mapped[List["Role"]] = relationship("Role",secondary=UserRole.__tablename__,back_populates="users",cascade="all, delete")
+    roles: Mapped[list[Role]] = relationship("Role",secondary=UserRole.__tablename__,back_populates="users",cascade="all, delete")
 
-    def __init__(self,login: str,password: str,first_name: str,last_name: str,email: EmailStr):
+    def __init__(self,login: str,password: str,first_name: str,last_name: str,email: EmailStr) -> None:
         self.login = login
         self.password_hash = pbkdf2_sha256.hash(password)
         self.first_name = first_name
@@ -30,5 +31,5 @@ class User(Base):
     def check_password(self, password: str):
         return pbkdf2_sha256.verify(password, self.password_hash)
 
-    def assign_role(self, role: Role):
+    def assign_role(self, role: Role) -> None:
         self.roles.append(role)
