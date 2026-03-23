@@ -4,8 +4,8 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import selectinload
 
+from app.data.models.role import Role
 from app.data.models.user import User
-from app.data.repositories.role_repository import get_role
 from app.data.schemas.user import UserUpdateDto
 from constants import DB_URL
 
@@ -44,7 +44,7 @@ async def update_user(user: UserUpdateDto) -> None:
         user_to_update.name = user.name
         user_to_update.surname = user.surname
         user_to_update.email = user.email
-        user_to_update.roles = [await get_role(el.id) for el in user.roles]
+        user_to_update.roles = [(await session.execute(select(Role).where(Role.id == el.id).options())).scalar() for el in user.roles]
 
 
 async def delete_user(user: UUID) -> None:

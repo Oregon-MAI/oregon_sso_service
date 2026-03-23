@@ -21,6 +21,10 @@ class UserUpdateDto(BaseModel):
     email: EmailStr
     roles: list[RoleConnectDto]
 
+class UserConnectRoleDto(BaseModel):
+    user_id: UUID
+    role_id:UUID
+
 class UserDeleteDto(BaseModel):
     id: UUID
 

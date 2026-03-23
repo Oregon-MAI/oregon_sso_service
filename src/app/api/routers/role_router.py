@@ -3,7 +3,8 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from app.data.schemas.role import RoleDto
+from app.data.schemas.role import RoleCreateDto, RoleDto
+from app.services.role_service import create_role
 from app.services.role_service import role as get_role
 from app.services.security_service import get_access_tokens_data
 
@@ -18,18 +19,18 @@ async def roles(current_user: str = Depends(get_tokens_data)):
 
 
 @router.get("/role")
-async def role(id: UUID, current_user: UUID = Depends(get_access_tokens_data)) -> RoleDto:
-    logging.info('GET: /role.',current_user)
+async def role(id: UUID, _current_user: UUID = Depends(get_access_tokens_data)) -> RoleDto:
+    logging.info('GET: /role.')
     return await get_role(id)
 
 
-"""
+
 @router.post("/create_role")
-async def create(new_role: RoleCreateDto, current_user: str = Depends(get_tokens_data)):
+async def create(new_role: RoleCreateDto, current_user: UUID = Depends(get_access_tokens_data)) -> dict[str,str]:
     logging.info('POST: /create_role.')
     return await create_role(new_role, current_user)
 
-
+"""
 @router.patch("/update_role")
 async def update(updated_role: RoleUpdateDto, current_user: str = Depends(get_tokens_data)):
     logging.info('PATCH: /update_role.')
