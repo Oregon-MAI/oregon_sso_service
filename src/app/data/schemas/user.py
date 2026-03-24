@@ -11,7 +11,7 @@ class UserCreateDto(BaseModel):
     name: str
     surname: str
     email: EmailStr
-    roles: list[RoleConnectDto]
+
 
 class UserUpdateDto(BaseModel):
     id: UUID
@@ -21,16 +21,20 @@ class UserUpdateDto(BaseModel):
     email: EmailStr
     roles: list[RoleConnectDto]
 
+
 class UserConnectRoleDto(BaseModel):
     user_id: UUID
-    role_id:UUID
+    role_id: UUID
+
 
 class UserDeleteDto(BaseModel):
     id: UUID
 
+
 class UserLoginDto(BaseModel):
     login: str
     password: str
+
 
 class UserDto(BaseModel):
     id: UUID

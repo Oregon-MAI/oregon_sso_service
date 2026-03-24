@@ -24,7 +24,8 @@ async def login(user_in: UserLoginDto) -> dict[str, str]:
     user: User = await get_user_by_login(user_in.login)
     if user_in.login == user.login and user.check_password(user_in.password):
         id_refresh: UUID = uuid4()
-        access_token = await create_jwt({"id": str(user.id), "roles": [role.name for role in list(user.roles)]},"access")
+        access_token = await create_jwt({"id": str(user.id), "roles": [role.name for role in list(user.roles)]},
+                                        "access")
         refresh_token = await create_jwt({"id": str(id_refresh), "user_id": str(user.id)}, "refresh")
         await insert_token(Token(id_refresh, refresh_token, True))
         return {"access_token": access_token, "token_type": "bearer", "refresh_token": refresh_token}
@@ -34,7 +35,8 @@ async def login(user_in: UserLoginDto) -> dict[str, str]:
 async def refresh(current_user: UUID, token: Token) -> dict[str, str]:
     user: User = await get_user_by_id(current_user)
     id_refresh: UUID = uuid4()
-    access_token: str = await create_jwt({"id": str(user.id), "roles": [role.name for role in list(user.roles)]},"access")
+    access_token: str = await create_jwt({"id": str(user.id), "roles": [role.name for role in list(user.roles)]},
+                                         "access")
     refresh_token: str = await create_jwt({"id": str(id_refresh), "user_id": str(user.id)}, "refresh")
     token.status = False
     await update_token(token)
@@ -51,6 +53,16 @@ async def create_jwt(data: dict, type: str) -> str:
         time += datetime.timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
     encode_data.update({"exp": time})
     return jwt.encode(encode_data, SECRET_KEY, algorithm=ALGORITHM)
+
+
+async def validate_token(token: str = Depends(SCHEME)) -> dict[str, str]:
+    try:
+        jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        return {"info": "valid"}
+    except jwt.ExpiredSignatureError:
+        return {"info": "The token has expired"}
+    except jwt.InvalidTokenError:
+        return {"info": "Invalid token"}
 
 
 async def get_refresh_tokens_data(token: str = Depends(SCHEME)) -> tuple[Token, UUID]:

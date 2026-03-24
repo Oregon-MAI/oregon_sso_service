@@ -5,17 +5,23 @@ from fastapi import APIRouter, Depends
 
 from app.data.models.token import Token
 from app.data.schemas.user import UserLoginDto
-from app.services.security_service import get_refresh_tokens_data
+from app.services.security_service import get_refresh_tokens_data, validate_token
 from app.services.security_service import login as security_login
 from app.services.security_service import refresh as security_refresh
 
 router = APIRouter(prefix='')
 
 
-@router.post("/auth")
+@router.post("/login")
 async def auth(user_in: UserLoginDto) -> dict[str, str]:
     logging.info('POST: /login.')
     return await security_login(user_in)
+
+
+@router.get("/validate")
+async def validate(data: dict[str, str] = Depends(validate_token)) -> dict[str, str]:
+    logging.info('GET: /validate.')
+    return data
 
 
 @router.get("/refresh")

@@ -20,13 +20,13 @@ async def get_users() -> list[User]:
         return result.scalars().all()
 
 
-async def get_user_by_id(id:UUID) -> User | None:
+async def get_user_by_id(id: UUID) -> User | None:
     async with async_session() as session, session.begin():
         result = await session.execute(select(User).where(User.id == id).options(selectinload(User.roles)))
         return result.scalar()
 
 
-async def get_user_by_login(login:str) -> User | None:
+async def get_user_by_login(login: str) -> User | None:
     async with async_session() as session, session.begin():
         result = await session.execute(select(User).where(User.login == login).options(selectinload(User.roles)))
         return result.scalar()
@@ -39,12 +39,14 @@ async def insert_user(new_user: User) -> None:
 
 async def update_user(user: UserUpdateDto) -> None:
     async with async_session() as session, session.begin():
-        user_to_update: User = await get_user_by_id(user.id)
+        user_to_update: User = (await session.execute(select(User).where(User.id == user.id).options(selectinload(User.roles)))).scalar()
         user_to_update.password = user.password
         user_to_update.name = user.name
         user_to_update.surname = user.surname
         user_to_update.email = user.email
         user_to_update.roles = [(await session.execute(select(Role).where(Role.id == el.id).options())).scalar() for el in user.roles]
+        for el in user_to_update.roles:
+            print(el.id)
 
 
 async def delete_user(user: UUID) -> None:

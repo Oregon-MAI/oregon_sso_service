@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from app.data.models.user import User
-from app.data.repositories.role_repository import get_role
 from app.data.repositories.user_repository import delete_user as delete
 from app.data.repositories.user_repository import get_user_by_id, get_users
 from app.data.repositories.user_repository import insert_user as insert
@@ -30,8 +29,6 @@ async def create_user(user_in: UserCreateDto, current_user: UUID) -> dict[str, s
         auth_user: User = await get_user_by_id(current_user)
         if any(role.name == ADMIN_USERNAME for role in list(auth_user.roles)):
             user: User = User(user_in.login, user_in.password, user_in.name, user_in.surname, user_in.email)
-            for role in list(user_in.roles):
-                user.roles.append(await get_role(role.id))
             await insert(user)
             return {"Info": user_in.dict()}
         return {"error": "you not have permission"}

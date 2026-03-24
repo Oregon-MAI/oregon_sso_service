@@ -24,7 +24,7 @@ async def user(id: UUID, _current_user: UUID = Depends(get_access_tokens_data)) 
     return await get_user(id)
 
 
-@router.post("/create_user")
+@router.post("/register")
 async def create(new_user: UserCreateDto, current_user: UUID = Depends(get_access_tokens_data)) -> dict[str, str]:
     logging.info('POST: /create_user.')
     return await create_user(new_user, current_user)
