@@ -1,7 +1,19 @@
-FROM python:3.14-rc-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY src/ ./src/
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-CMD ["python", "src/main.py"]
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+RUN chmod +x entrypoint.sh
+
+EXPOSE 8000
+
+ENTRYPOINT ["./entrypoint.sh"]

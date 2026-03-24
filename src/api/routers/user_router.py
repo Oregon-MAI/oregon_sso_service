@@ -3,11 +3,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from app.data.schemas.user import UserConnectRoleDto, UserCreateDto, UserDeleteDto, UserDto
-from app.services.security_service import get_access_tokens_data
-from app.services.user_service import change_role as update_user_role
-from app.services.user_service import create_user, delete_user, get_users
-from app.services.user_service import user as get_user
+from src.data.schemas.user import UserConnectRoleDto, UserCreateDto, UserDeleteDto, UserDto
+from src.services.security_service import get_access_tokens_data
+from src.services.user_service import change_role as update_user_role
+from src.services.user_service import create_user, delete_user, get_users
+from src.services.user_service import user as get_user
 
 router = APIRouter(prefix='')
 

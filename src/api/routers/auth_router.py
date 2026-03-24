@@ -3,11 +3,11 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from app.data.models.token import Token
-from app.data.schemas.user import UserLoginDto
-from app.services.security_service import get_refresh_tokens_data, validate_token
-from app.services.security_service import login as security_login
-from app.services.security_service import refresh as security_refresh
+from src.data.models.token import Token
+from src.data.schemas.user import UserLoginDto
+from src.services.security_service import get_refresh_tokens_data, validate_token
+from src.services.security_service import login as security_login
+from src.services.security_service import refresh as security_refresh
 
 router = APIRouter(prefix='')
 

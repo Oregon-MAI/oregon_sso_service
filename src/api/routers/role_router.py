@@ -3,10 +3,10 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from app.data.schemas.role import RoleCreateDto, RoleDto
-from app.services.role_service import create_role
-from app.services.role_service import role as get_role
-from app.services.security_service import get_access_tokens_data
+from src.data.schemas.role import RoleCreateDto, RoleDto
+from src.services.role_service import create_role
+from src.services.role_service import role as get_role
+from src.services.security_service import get_access_tokens_data
 
 router = APIRouter(prefix='')
 

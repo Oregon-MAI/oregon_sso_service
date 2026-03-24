@@ -3,8 +3,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.data.models.token import Token
-from constants import DB_URL
+from src.data.models.token import Token
+from src.constants import DB_URL
 
 engine = create_async_engine(DB_URL, echo=True, future=True)
 

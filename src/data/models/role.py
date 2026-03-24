@@ -3,8 +3,8 @@ from uuid import uuid4
 from sqlalchemy import UUID, Column, String, Text
 from sqlalchemy.orm import relationship
 
-from app.data.models.base import Base
-from app.data.models.user_role import UserRole
+from src.data.models.base import Base
+from src.data.models.user_role import UserRole
 
 
 class Role(Base):

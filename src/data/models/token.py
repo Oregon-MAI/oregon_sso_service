@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from sqlalchemy import UUID, Boolean, Column, Text
 
-from app.data.models.base import Base
+from src.data.models.base import Base
 
 
 class Token(Base):

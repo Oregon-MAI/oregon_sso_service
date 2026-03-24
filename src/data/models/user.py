@@ -5,9 +5,9 @@ from pydantic import EmailStr
 from sqlalchemy import UUID, Column, String
 from sqlalchemy.orm import Mapped, relationship
 
-from app.data.models.base import Base
-from app.data.models.role import Role
-from app.data.models.user_role import UserRole
+from src.data.models.base import Base
+from src.data.models.role import Role
+from src.data.models.user_role import UserRole
 
 
 class User(Base):

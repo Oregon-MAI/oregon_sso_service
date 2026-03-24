@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
-from app.data.schemas.role import RoleConnectDto, RoleDto
+from src.data.schemas.role import RoleConnectDto, RoleDto
 
 
 class UserCreateDto(BaseModel):

@@ -1,13 +1,13 @@
 from uuid import UUID
 
-from app.data.models.user import User
-from app.data.repositories.user_repository import delete_user as delete
-from app.data.repositories.user_repository import get_user_by_id, get_users
-from app.data.repositories.user_repository import insert_user as insert
-from app.data.repositories.user_repository import update_user as update
-from app.data.schemas.role import RoleConnectDto
-from app.data.schemas.user import UserConnectRoleDto, UserCreateDto, UserDeleteDto, UserUpdateDto
-from constants import ADMIN_USERNAME
+from src.data.models.user import User
+from src.data.repositories.user_repository import delete_user as delete
+from src.data.repositories.user_repository import get_user_by_id, get_users
+from src.data.repositories.user_repository import insert_user as insert
+from src.data.repositories.user_repository import update_user as update
+from src.data.schemas.role import RoleConnectDto
+from src.data.schemas.user import UserConnectRoleDto, UserCreateDto, UserDeleteDto, UserUpdateDto
+from src.constants import ADMIN_USERNAME
 
 
 async def users() -> list[User] | dict[str, str]:

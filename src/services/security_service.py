@@ -6,12 +6,12 @@ import jwt
 from fastapi import Depends, HTTPException
 from starlette import status
 
-from app.data.models.token import Token
-from app.data.models.user import User
-from app.data.repositories.auth_repository import get_token, insert_token, update_token
-from app.data.repositories.user_repository import get_user_by_id, get_user_by_login
-from app.data.schemas.user import UserLoginDto
-from constants import (
+from src.data.models.token import Token
+from src.data.models.user import User
+from src.data.repositories.auth_repository import get_token, insert_token, update_token
+from src.data.repositories.user_repository import get_user_by_id, get_user_by_login
+from src.data.schemas.user import UserLoginDto
+from src.constants import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     ALGORITHM,
     REFRESH_TOKEN_EXPIRE_MINUTES,

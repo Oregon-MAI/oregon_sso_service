@@ -4,8 +4,17 @@ services:
     image: postgres:latest
     restart: unless-stopped
     ports:
-      - "1234:5432"
+      - "5432:5432"
     environment:
       POSTGRES_USERNAME: postgres
       POSTGRES_PASSWORD: root
       POSTGRES_DB: postgres
+
+  api:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: unless-stopped
