@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha256  # ty: ignore[unresolved-import]
 from pydantic import EmailStr
 from sqlalchemy import UUID, Column, String
 from sqlalchemy.orm import Mapped, relationship

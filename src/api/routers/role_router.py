@@ -1,12 +1,4 @@
-import logging
-from uuid import UUID
-
-from fastapi import APIRouter, Depends
-
-from src.data.schemas.role import RoleCreateDto, RoleDto
-from src.services.role_service import create_role
-from src.services.role_service import role as get_role
-from src.services.security_service import get_access_tokens_data
+from fastapi import APIRouter
 
 router = APIRouter(prefix="")
 
@@ -15,7 +7,7 @@ router = APIRouter(prefix="")
 async def roles(current_user: str = Depends(get_tokens_data)):
     logging.info('GET: /roles.')
     return await get_roles()
-"""
+
 
 
 @router.get("/role")
@@ -32,7 +24,6 @@ async def create(
     return await create_role(new_role, current_user)
 
 
-"""
 @router.patch("/update_role")
 async def update(updated_role: RoleUpdateDto, current_user: str = Depends(get_tokens_data)):
     logging.info('PATCH: /update_role.')

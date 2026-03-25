@@ -10,7 +10,7 @@ from src.services.user_service import delete_user
 from src.services.user_service import user as get_user
 from src.services.user_service import users as get_users
 
-router = APIRouter(prefix="")
+router = APIRouter(prefix="/api/v1/user")
 
 
 @router.get("/users")

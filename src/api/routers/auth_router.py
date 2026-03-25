@@ -10,7 +10,7 @@ from src.services.security_service import login as security_login
 from src.services.security_service import refresh as security_refresh
 from src.services.user_service import create_user
 
-router = APIRouter(prefix="")
+router = APIRouter(prefix="/api/v1/auth")
 
 
 @router.post("/login")
