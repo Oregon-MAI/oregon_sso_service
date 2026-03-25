@@ -23,8 +23,6 @@ from src.data.schemas.user import UserLoginDto
 async def login(user_in: UserLoginDto) -> dict[str, str]:
     try:
         user: User = await get_user_by_login(user_in.login)
-        if user is None:
-            raise TypeError
         if user_in.login == user.login and user.check_password(user_in.password):
             id_refresh: UUID = uuid4()
             access_token = await create_jwt(
@@ -39,13 +37,9 @@ async def login(user_in: UserLoginDto) -> dict[str, str]:
                 "token_type": "bearer",
                 "refresh_token": refresh_token,
             }
-    except TypeError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="incorrect data"
-        ) from e
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="incorrect data"
         ) from e
     return {"Info": "Login Failed"}
 
