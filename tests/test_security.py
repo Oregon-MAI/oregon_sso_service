@@ -73,7 +73,7 @@ async def test_login_wrong_password(mock_user: MagicMock) -> None:
     mock_user.check_password.return_value = False
 
     with patch(
-            "src.services.security_service.get_user_by_login", AsyncMock(return_value=mock_user)
+        "src.services.security_service.get_user_by_login", AsyncMock(return_value=mock_user)
     ):
         result = await login(user_in)
         assert result == {"Info": "Login Failed"}
@@ -123,7 +123,7 @@ async def test_validate_token_valid(mock_token: MagicMock) -> None:
 async def test_validate_token_expired() -> None:
     expired_payload = {
         "id": str(uuid4()),
-        "exp": datetime.datetime.now(datetime.UTC) - datetime.timedelta(minutes=1)
+        "exp": datetime.datetime.now(datetime.UTC) - datetime.timedelta(minutes=1),
     }
     expired_token = jwt.encode(expired_payload, SECRET_KEY, algorithm=ALGORITHM)
 
