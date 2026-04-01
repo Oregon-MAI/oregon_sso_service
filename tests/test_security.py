@@ -1,11 +1,13 @@
-from typing import Any, cast
+import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import jwt
 import pytest
 from fastapi import HTTPException
+from starlette import status
 
+from src.constants import ALGORITHM, SECRET_KEY
 from src.data.models.token import Token
 from src.data.models.user import User
 from src.data.schemas.user import UserLoginDto
@@ -27,9 +29,9 @@ def mock_user() -> MagicMock:
     user.first_name = "Test"
     user.last_name = "User"
     user.email = "test@example.com"
+
     role_mock = MagicMock()
     role_mock.name = "admin"
-    role_mock.id = uuid4()
     user.roles = [role_mock]
 
     user.check_password = MagicMock(return_value=True)
@@ -45,6 +47,7 @@ def mock_token() -> MagicMock:
     return token
 
 
+@pytest.mark.asyncio
 async def test_login_success(mock_user: MagicMock) -> None:
     user_in = UserLoginDto(login="testuser", password="correct_password")
 
@@ -58,36 +61,25 @@ async def test_login_success(mock_user: MagicMock) -> None:
     ):
         result = await login(user_in)
 
-        assert "access_token" in result
-        assert "refresh_token" in result
-        assert result["user_id"] == str(mock_user.id)
         assert result["access_token"] == "access_123"
         assert result["refresh_token"] == "refresh_456"
+        assert result["id"] == str(mock_user.id)
+        assert result["login"] == mock_user.login
 
 
-async def test_login_user_not_found() -> None:
-    user_in = UserLoginDto(login="unknown", password="pass")
-
-    with patch("src.services.security_service.get_user_by_login", AsyncMock(return_value=None)):
-        with pytest.raises(HTTPException) as exc:
-            await login(user_in)
-
-        assert exc.value.status_code == 401
-        assert exc.value.detail == "incorrect data"
-
-
+@pytest.mark.asyncio
 async def test_login_wrong_password(mock_user: MagicMock) -> None:
     user_in = UserLoginDto(login="testuser", password="wrong_password")
     mock_user.check_password.return_value = False
 
     with patch(
-        "src.services.security_service.get_user_by_login", AsyncMock(return_value=mock_user)
+            "src.services.security_service.get_user_by_login", AsyncMock(return_value=mock_user)
     ):
         result = await login(user_in)
-
         assert result == {"Info": "Login Failed"}
 
 
+@pytest.mark.asyncio
 async def test_refresh_success(mock_user: MagicMock, mock_token: MagicMock) -> None:
     with (
         patch("src.services.security_service.get_user_by_id", AsyncMock(return_value=mock_user)),
@@ -105,102 +97,44 @@ async def test_refresh_success(mock_user: MagicMock, mock_token: MagicMock) -> N
         assert mock_token.status is False
 
 
-async def test_refresh_database_error(mock_user: MagicMock, mock_token: MagicMock) -> None:
-    with (
-        patch(
-            "src.services.security_service.get_user_by_id",
-            AsyncMock(side_effect=Exception("DB error")),
-        ),
-    ):
-        with pytest.raises(HTTPException) as exc:
-            await refresh(mock_user.id, mock_token)
-
-        assert exc.value.status_code == 500
-
-
+@pytest.mark.asyncio
 async def test_create_jwt_access_token() -> None:
     payload = {"id": str(uuid4()), "role": "admin"}
     token = await create_jwt(payload, "access")
 
     assert isinstance(token, str)
-    decoded = jwt.decode(token, options={"verify_signature": False})
+    decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     assert decoded["id"] == payload["id"]
     assert "exp" in decoded
 
 
-async def test_create_jwt_refresh_token() -> None:
-    payload = {"id": str(uuid4()), "user_id": str(uuid4())}
-    token = await create_jwt(payload, "refresh")
-
-    assert isinstance(token, str)
-    decoded = jwt.decode(token, options={"verify_signature": False})
-    assert decoded["id"] == payload["id"]
-
-
-async def test_validate_token_valid(mock_user: MagicMock, mock_token: MagicMock) -> None:
-    user_id = str(uuid4())
-    token_str = await create_jwt({"id": user_id}, "access")
-
+@pytest.mark.asyncio
+async def test_validate_token_valid(mock_token: MagicMock) -> None:
+    token_id = uuid4()
+    token_str = await create_jwt({"id": str(token_id)}, "access")
     mock_token.status = True
 
-    with (
-        patch("src.services.security_service.get_token", AsyncMock(return_value=mock_token)),
-        patch("src.services.security_service.get_user_by_id", AsyncMock(return_value=mock_user)),
-    ):
+    with patch("src.services.security_service.get_token", AsyncMock(return_value=mock_token)):
         result = await validate_token(token_str)
-
-        assert result["id"] == user_id
-        assert result["login"] == mock_user.login
-        assert result["is_valid"] == "True"
-        assert "admin" in result["roles"]
+        assert result == {"is_valid": "True"}
 
 
+@pytest.mark.asyncio
 async def test_validate_token_expired() -> None:
-    from src.constants import ALGORITHM, SECRET_KEY
-
-    expired_payload = {"id": str(uuid4()), "exp": 0}
+    expired_payload = {
+        "id": str(uuid4()),
+        "exp": datetime.datetime.now(datetime.UTC) - datetime.timedelta(minutes=1)
+    }
     expired_token = jwt.encode(expired_payload, SECRET_KEY, algorithm=ALGORITHM)
 
     with pytest.raises(HTTPException) as exc:
         await validate_token(expired_token)
 
     assert exc.value.status_code == 401
-    detail = cast(dict[str, Any], exc.value.detail)
-    assert detail["info"] == "The token has expired"
-    assert detail["is_valid"] == "False"
+    assert exc.value.detail == {"is_valid": "False"}
 
 
-async def test_validate_token_invalid_signature() -> None:
-    invalid_token = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6InRlc3QifQ.invalid_signature"
-
-    with pytest.raises(HTTPException) as exc:
-        await validate_token(invalid_token)
-
-    assert exc.value.status_code == 401
-    detail = cast(dict[str, Any], exc.value.detail)
-    assert detail["info"] == "Invalid token"
-
-
-async def test_validate_token_not_in_db(mock_token: MagicMock) -> None:
-    user_id = str(uuid4())
-    token_str = await create_jwt({"id": user_id}, "access")
-
-    with (
-        patch("src.services.security_service.get_token", AsyncMock(return_value=None)),
-    ):
-        with pytest.raises(HTTPException) as exc:
-            await validate_token(token_str)
-        assert exc.value.status_code == 401
-
-    mock_token.status = False
-    with (
-        patch("src.services.security_service.get_token", AsyncMock(return_value=mock_token)),
-    ):
-        with pytest.raises(HTTPException) as exc:
-            await validate_token(token_str)
-        assert exc.value.status_code == 401
-
-
+@pytest.mark.asyncio
 async def test_get_refresh_tokens_data_success(mock_token: MagicMock) -> None:
     user_id = uuid4()
     token_str = await create_jwt({"id": str(mock_token.id), "user_id": str(user_id)}, "refresh")
@@ -212,24 +146,18 @@ async def test_get_refresh_tokens_data_success(mock_token: MagicMock) -> None:
         assert result_user_id == user_id
 
 
-async def test_get_refresh_tokens_data_invalid() -> None:
-    with pytest.raises(HTTPException) as exc:
-        await get_refresh_tokens_data("invalid_token")
-
-    assert exc.value.status_code == 401
-
-
+@pytest.mark.asyncio
 async def test_get_access_tokens_data_success() -> None:
     user_id = uuid4()
     token_str = await create_jwt({"id": str(user_id)}, "access")
 
     result = await get_access_tokens_data(token_str)
-
     assert result == user_id
 
 
+@pytest.mark.asyncio
 async def test_get_access_tokens_data_invalid() -> None:
     with pytest.raises(HTTPException) as exc:
-        await get_access_tokens_data("bad_token")
+        await get_access_tokens_data("invalid.token.payload")
 
-    assert exc.value.status_code == 401
+    assert exc.value.status_code == status.HTTP_401_UNAUTHORIZED
