@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/v1/auth")
 
 
 @router.post("/login")
-async def auth(user_in: UserLoginDto) -> dict[str, str]:
+async def auth(user_in: UserLoginDto) -> dict[str, Any]:
     logging.info("POST: /login.")
     return await security_login(user_in)
 
