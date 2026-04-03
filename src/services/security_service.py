@@ -90,7 +90,7 @@ async def create_jwt(data: dict, type: str) -> str:
 
 async def validate_token(token: str = Depends(SCHEME)) -> dict[str, Any]:
     try:
-        data: dict[str, Any] = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
         return {
             "is_valid": "True",
         }
