@@ -3,17 +3,25 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from src.data.models.role import Role
-from src.data.repositories.role_repository import get_role, get_roles
 from src.data.schemas.role import RoleCreateDto, RoleDeleteDto, RoleDto, RoleUpdateDto
-from src.services.role_service import create_role, delete_role, update_role
+from src.services.role_service import (
+    create_role,
+    delete_role,
+    update_role,
+)
+from src.services.role_service import (
+    role as get_role,
+)
+from src.services.role_service import (
+    roles as get_roles,
+)
 from src.services.security_service import get_access_tokens_data
 
 router = APIRouter(prefix="")
 
 
 @router.get("/roles")
-async def roles(current_user: UUID = Depends(get_access_tokens_data)) -> list[Role]:
+async def roles(current_user: UUID = Depends(get_access_tokens_data)) -> list[RoleDto]:
     logging.info("GET: /roles.", current_user)
     return await get_roles()
 

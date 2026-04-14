@@ -23,12 +23,19 @@ from src.data.repositories.user_repository import get_user_by_id
 from src.data.schemas.role import RoleCreateDto, RoleDeleteDto, RoleDto, RoleUpdateDto
 
 
-async def roles() -> list[Role] | dict[str, str]:
+async def roles() -> list[RoleDto]:
     try:
         roles_arr: list[Role] = await get_roles()
         if roles_arr is None:
             raise Exception
-        return roles_arr
+        result: list[RoleDto] = []
+        for role in roles_arr:
+            result.append(
+                RoleDto(
+                    id=UUID(str(role.id)), name=str(role.name), description=str(role.description)
+                )
+            )
+        return result
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR"
