@@ -1,13 +1,21 @@
-from fastapi import APIRouter
+import logging
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+
+from src.data.models.role import Role
+from src.data.repositories.role_repository import get_role, get_roles
+from src.data.schemas.role import RoleCreateDto, RoleDeleteDto, RoleDto, RoleUpdateDto
+from src.services.role_service import create_role, delete_role, update_role
+from src.services.security_service import get_access_tokens_data
 
 router = APIRouter(prefix="")
 
-"""
-@router.get("/roles")
-async def roles(current_user: str = Depends(get_tokens_data)):
-    logging.info('GET: /roles.')
-    return await get_roles()
 
+@router.get("/roles")
+async def roles(current_user: UUID = Depends(get_access_tokens_data)) -> list[Role]:
+    logging.info("GET: /roles.", current_user)
+    return await get_roles()
 
 
 @router.get("/role")
@@ -25,13 +33,16 @@ async def create(
 
 
 @router.patch("/update_role")
-async def update(updated_role: RoleUpdateDto, current_user: str = Depends(get_tokens_data)):
-    logging.info('PATCH: /update_role.')
+async def update(
+    updated_role: RoleUpdateDto, current_user: UUID = Depends(get_access_tokens_data)
+) -> dict[str, str]:
+    logging.info("PATCH: /update_role.")
     return await update_role(updated_role, current_user)
 
 
 @router.delete("/delete_role")
-async def delete(deleted_role: RoleDeleteDto, current_user: str = Depends(get_tokens_data)):
-    logging.info('DELETE: /delete_role.')
+async def delete(
+    deleted_role: RoleDeleteDto, current_user: UUID = Depends(get_access_tokens_data)
+) -> dict[str, str]:
+    logging.info("DELETE: /delete_role.")
     return await delete_role(deleted_role, current_user)
-"""
