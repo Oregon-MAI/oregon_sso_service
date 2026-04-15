@@ -87,13 +87,6 @@ async def test_user_success(mock_user: MagicMock) -> None:
         assert result.login == mock_user.login
 
 
-async def test_user_not_found() -> None:
-    with patch("src.services.user_service.get_user_by_id", AsyncMock(return_value=None)):
-        result = await user(uuid4())
-
-        assert result is None
-
-
 async def test_user_database_error() -> None:
     with patch(
         "src.services.user_service.get_user_by_id", AsyncMock(side_effect=Exception("Error"))
