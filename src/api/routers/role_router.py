@@ -17,7 +17,7 @@ from src.services.role_service import (
 )
 from src.services.security_service import get_access_tokens_data
 
-router = APIRouter(prefix="")
+router = APIRouter(prefix="/api/v1/roles")
 
 
 @router.get("/roles")
