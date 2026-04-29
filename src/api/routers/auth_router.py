@@ -10,29 +10,38 @@ from src.services.security_service import get_refresh_tokens_data, validate_toke
 from src.services.security_service import login as security_login
 from src.services.security_service import refresh as security_refresh
 from src.services.user_service import create_user
+from src.trace import tracer
 
 router = APIRouter(prefix="/api/v1/auth")
 
 
 @router.post("/login")
 async def auth(user_in: UserLoginDto) -> dict[str, Any]:
-    logging.info("POST: /login.")
+    with tracer.start_as_current_span("sso.login") as span:
+        logging.info("POST: /login. trace_id=%032x", span.get_span_context().trace_id)
+        span.add_event("Login")
     return await security_login(user_in)
 
 
 @router.post("/validate")
 async def validate(data: dict[str, str] = Depends(validate_token)) -> dict[str, Any]:
-    logging.info("POST: /validate.")
+    with tracer.start_as_current_span("sso.validation") as span:
+        logging.info("POST: /validate. trace_id=%032x", span.get_span_context().trace_id)
+        span.add_event("Token validation")
     return data
 
 
 @router.post("/refresh")
 async def refresh(data: tuple[Token, UUID] = Depends(get_refresh_tokens_data)) -> dict[str, str]:
-    logging.info("POST: /refresh.")
+    with tracer.start_as_current_span("sso.refresh") as span:
+        logging.info("POST: /refresh. trace_id=%032x", span.get_span_context().trace_id)
+        span.add_event("Token refresh")
     return await security_refresh(data[1], data[0])
 
 
 @router.post("/register")
 async def create(new_user: UserCreateDto) -> dict[str, str]:
-    logging.info("POST: /create_user.")
+    with tracer.start_as_current_span("sso.register") as span:
+        logging.info("POST: /create_user. trace_id=%032x", span.get_span_context().trace_id)
+        span.add_event("User register")
     return await create_user(new_user)

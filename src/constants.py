@@ -1,3 +1,5 @@
+import os
+
 from fastapi.security import OAuth2PasswordBearer
 
 SCHEME = OAuth2PasswordBearer(tokenUrl="login")
@@ -7,6 +9,9 @@ SECRET_KEY = (
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_MINUTES = 10080
+
+JAEGER_ENDPOINT = os.getenv("JAEGER")
+SERVICE_NAME = "sso"
 
 DB_URL = "postgresql+asyncpg://postgres:root@postgres-sso-service:5433/postgres"
 
