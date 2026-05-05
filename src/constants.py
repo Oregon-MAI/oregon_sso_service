@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from fastapi.security import OAuth2PasswordBearer
 
@@ -10,8 +11,9 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_MINUTES = 10080
 
-JAEGER_ENDPOINT = os.getenv("JAEGER")
+JAEGER_ENDPOINT = os.getenv("JAEGER", "")
 SERVICE_NAME = "sso"
+LOG_FILE = Path("sso.log")
 
 DB_URL = "postgresql+asyncpg://postgres:root@postgres-sso-service:5433/postgres"
 

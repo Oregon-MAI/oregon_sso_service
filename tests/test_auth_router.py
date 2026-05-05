@@ -1,4 +1,3 @@
-from collections.abc import Generator
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
@@ -19,18 +18,8 @@ def client() -> TestClient:
     return TestClient(app)
 
 
-@pytest.fixture
-def _mock_tracer() -> Generator[MagicMock]:
-    with patch("src.api.routers.auth_router.tracer") as mock:
-        mock_span = MagicMock()
-        mock_span.__enter__ = MagicMock(return_value=MagicMock())
-        mock_span.__exit__ = MagicMock(return_value=None)
-        mock.start_as_current_span.return_value = mock_span
-        yield mock
-
-
 @pytest.mark.asyncio
-def test_auth_login(client: TestClient, _mock_tracer: MagicMock) -> None:
+def test_auth_login(client: TestClient) -> None:
     login_data = {"login": "testuser", "password": "password"}
 
     with patch("src.api.routers.auth_router.security_login", new_callable=AsyncMock) as mock_login:
@@ -44,7 +33,7 @@ def test_auth_login(client: TestClient, _mock_tracer: MagicMock) -> None:
 
 
 @pytest.mark.asyncio
-def test_validate_token(client: TestClient, _mock_tracer: MagicMock) -> None:
+def test_validate_token(client: TestClient) -> None:
     user_id = uuid4()
     app.dependency_overrides[validate_token] = lambda: {"sub": str(user_id)}
 
@@ -56,7 +45,7 @@ def test_validate_token(client: TestClient, _mock_tracer: MagicMock) -> None:
 
 
 @pytest.mark.asyncio
-def test_refresh_token(client: TestClient, _mock_tracer: MagicMock) -> None:
+def test_refresh_token(client: TestClient) -> None:
     user_id = uuid4()
     mock_token = MagicMock(spec=Token)
 
@@ -80,7 +69,7 @@ def test_refresh_token(client: TestClient, _mock_tracer: MagicMock) -> None:
 
 
 @pytest.mark.asyncio
-def test_register_user(client: TestClient, _mock_tracer: MagicMock) -> None:
+def test_register_user(client: TestClient) -> None:
     user_data = {
         "login": "newuser",
         "password": "password",
