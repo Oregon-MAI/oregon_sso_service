@@ -1,21 +1,21 @@
-import logging
-
+import structlog
 from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
 from src.api.routers.auth_router import router as auth_router
 from src.api.routers.role_router import router as role_router
 from src.api.routers.user_router import router as user_router
+from src.constants import JAEGER_ENDPOINT, SERVICE_NAME
+from src.log import init_logger
+from src.trace import init
+
+init_logger()
+
+init(SERVICE_NAME, JAEGER_ENDPOINT)
 
 app = FastAPI()
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename="sso.log",
-    filemode="a",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    format="[%(asctime)s] %(levelname)s %(message)s",
-)
+logger = structlog.get_logger("sso")
 
 FastAPIInstrumentor.instrument_app(app)
 
