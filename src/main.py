@@ -8,6 +8,7 @@ from src.api.routers.role_router import router as role_router
 from src.api.routers.user_router import router as user_router
 from src.constants import JAEGER_ENDPOINT, SERVICE_NAME
 from src.log import init_logger
+from src.metrics_middleware import REDMetricsMiddleware
 from src.trace import init
 
 init_logger()
@@ -22,6 +23,8 @@ instrumentator.instrument(app)
 instrumentator.expose(app, endpoint="/metrics")
 
 logger = structlog.get_logger("sso")
+
+app.add_middleware(REDMetricsMiddleware)
 
 app.include_router(auth_router)
 app.include_router(user_router)
