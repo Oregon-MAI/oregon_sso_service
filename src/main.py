@@ -24,7 +24,7 @@ instrumentator.expose(app, endpoint="/metrics")
 
 logger = structlog.get_logger("sso")
 
-app.add_middleware(REDMetricsMiddleware)
+app.add_middleware(REDMetricsMiddleware)  # type: ignore[invalid-argument-type]
 
 app.include_router(auth_router)
 app.include_router(user_router)
