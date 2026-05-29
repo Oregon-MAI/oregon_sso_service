@@ -90,75 +90,61 @@ docker compose up
 
 ```
 <pre>
-    ├── api/
-    │   └── routers/
-            ├── notification_router.py 
-    ├── consumers/
-            ├── consumer.py 
-    ├── data/
-    │   └── models/   
-            ├── message.py 
-    ├── repositories/
-            ├── message_repository.py 
-    ├── services/
-    │   ├── background_service.py  
-    │   ├── connection_service.py  
-    │   └── messages_service.py   
-    ├── constants.py 
-    └── main.py 
-
-    oregon_sso_service/
-    ├── src/                                
-    │   ├── alembic.ini                     
-    │   ├── constants.py                    
-    │   ├── log.py                          
-    │   ├── main.py                         
-    │   ├── trace.py                        
-    │   ├── __init__.py
-    │   ├── api/
-    │   │   └── routers/
-    │   │       ├── auth_router.py          
-    │   │       ├── role_router.py          
-    │   │       └── user_router.py          
-    │   ├── data/
-    │   │   ├── models/                     
-    │   │   │   ├── base.py
-    │   │   │   ├── role.py
-    │   │   │   ├── token.py
-    │   │   │   ├── user.py
-    │   │   │   └── user_role.py
-    │   │   ├── repositories/               
-    │   │   │   ├── auth_repository.py
-    │   │   │   ├── role_repository.py
-    │   │   │   └── user_repository.py
-    │   │   └── schemas/                    
-    │   │       ├── role.py
-    │   │       └── user.py
-    │   ├── migrations/                     
-    │   │   ├── env.py
-    │   │   ├── script.py.mako
-    │   │   └── versions/
-    │   └── services/                       
-    │       ├── role_service.py
-    │       ├── security_service.py
-    │       └── user_service.py
-    ├── tests/                              
-    │   ├── conftest.py                     
-    │   ├── test_auth_router.py
-    │   ├── test_repository.py
-    │   ├── test_role.py
-    │   ├── test_role_router.py
-    │   ├── test_security.py
-    │   ├── test_user_router.py
-    │   └── test_user_service.py
-    ├── docker-compose.yaml                 
-    ├── Dockerfile                          
-    ├── entrypoint.sh                       
-    ├── pyproject.toml                      
-    ├── uv.lock                             
-    ├── .dockerignore
-    ├── .gitignore
-    ├── .python-version
-    └── README.md
+oregon_sso_service/
+├── configs/
+│ └── prometheus.yml
+├── src/
+│ ├── alembic.ini
+│ ├── constants.py
+│ ├── log.py
+│ ├── main.py
+│ ├── metrics_middleware.py
+│ ├── trace.py
+│ ├── __init__.py
+│ ├── api/
+│ │ └── routers/
+│ │ ├── auth_router.py
+│ │ ├── role_router.py
+│ │ └── user_router.py
+│ ├── data/
+│ │ ├── models/
+│ │ │ ├── base.py
+│ │ │ ├── role.py
+│ │ │ ├── token.py
+│ │ │ ├── user.py
+│ │ │ └── user_role.py
+│ │ ├── repositories/
+│ │ │ ├── auth_repository.py
+│ │ │ ├── role_repository.py
+│ │ │ └── user_repository.py
+│ │ └── schemas/
+│ │ ├── role.py
+│ │ └── user.py
+│ ├── migrations/
+│ │ ├── env.py
+│ │ ├── script.py.mako
+│ │ └── versions/
+│ └── services/
+│ ├── role_service.py
+│ ├── security_service.py
+│ └── user_service.py
+├── tests/
+│ ├── conftest.py
+│ ├── test_auth_router.py
+│ ├── test_repository.py
+│ ├── test_role.py
+│ ├── test_role_router.py
+│ ├── test_security.py
+│ ├── test_user_router.py
+│ └── test_user_service.py
+├── docker-compose.yaml
+├── Dockerfile
+├── entrypoint.sh
+├── pyproject.toml
+├── uv.lock
+├── .dockerignore
+├── .gitignore
+├── .python-version
+└── README.md
 </pre>
 ```
