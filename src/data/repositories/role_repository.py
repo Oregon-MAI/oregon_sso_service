@@ -13,31 +13,51 @@ async_session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_c
 
 
 async def get_roles() -> list[Role]:
+    """
+    Получение всех ролей из бд
+    :return: список объектов Role
+    """
     async with async_session() as session, session.begin():
         result = await session.execute(select(Role).options())
         return list(result.scalars().all())
 
 
 async def get_role(id: UUID) -> Role:
+    """
+    Получение роли по id
+    :return: объект Role
+    """
     async with async_session() as session, session.begin():
         result = await session.execute(select(Role).where(Role.id == id).options())
         return result.scalar_one()
 
 
 async def insert_role(new_role: Role) -> None:
+    """
+    Добавление новой роли в бд
+    :return: None
+    """
     async with async_session() as session, session.begin():
         session.add(new_role)
 
 
 async def update_role(role: RoleUpdateDto) -> None:
+    """
+    Обновление данных роли
+    :return: None
+    """
     async with async_session() as session, session.begin():
         role_to_update: Role = (
-            await session.execute(select(Role).where(Role.id == id).options())
+            await session.execute(select(Role).where(Role.id == role.id).options())
         ).scalar_one()
         role_to_update.name = role.name
         role_to_update.description = role.description
 
 
 async def delete_role(role: UUID) -> None:
+    """
+    Удаление роли по id
+    :return: None
+    """
     async with async_session() as session, session.begin():
         await session.execute(delete(Role).where(Role.id == role))

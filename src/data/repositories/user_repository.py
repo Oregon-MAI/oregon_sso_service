@@ -15,12 +15,20 @@ async_session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_c
 
 
 async def get_users() -> list[User]:
+    """
+    Получение всех пользователей
+    :return: список объектов User
+    """
     async with async_session() as session, session.begin():
         result = await session.execute(select(User).options(selectinload(User.roles)))
         return list(result.scalars().all())
 
 
 async def get_user_by_id(id: UUID) -> User:
+    """
+    Получение пользователя по id
+    :return: объект User
+    """
     async with async_session() as session, session.begin():
         result = await session.execute(
             select(User).where(User.id == id).options(selectinload(User.roles))
@@ -29,6 +37,10 @@ async def get_user_by_id(id: UUID) -> User:
 
 
 async def get_user_by_login(login: str) -> User:
+    """
+    Получение пользователя по логину
+    :return: объект User
+    """
     async with async_session() as session, session.begin():
         result = await session.execute(
             select(User).where(User.login == login).options(selectinload(User.roles))
@@ -37,11 +49,19 @@ async def get_user_by_login(login: str) -> User:
 
 
 async def insert_user(new_user: User) -> None:
+    """
+    Добавление нового пользователя в бд
+    :return: None
+    """
     async with async_session() as session, session.begin():
         session.add(new_user)
 
 
 async def update_user(user: UserUpdateDto) -> None:
+    """
+    Обновление данных пользователя и его ролей
+    :return: None
+    """
     async with async_session() as session, session.begin():
         user_to_update: User = (
             await session.execute(
@@ -63,5 +83,9 @@ async def update_user(user: UserUpdateDto) -> None:
 
 
 async def delete_user(user: UUID) -> None:
+    """
+    Удаление пользователя по id
+    :return: None
+    """
     async with async_session() as session, session.begin():
         await session.execute(delete(User).where(User.id == user))

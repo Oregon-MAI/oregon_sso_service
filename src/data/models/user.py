@@ -11,6 +11,10 @@ from src.data.models.user_role import UserRole
 
 
 class User(Base):
+    """
+    Модель пользователя
+    """
+
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
@@ -26,6 +30,9 @@ class User(Base):
     def __init__(
         self, login: str, password: str, first_name: str, last_name: str, email: EmailStr
     ) -> None:
+        """
+        Инициализация нового пользователя с хешированием пароля
+        """
         self.login = login
         self.password_hash = pbkdf2_sha256.hash(password)
         self.first_name = first_name
@@ -33,4 +40,8 @@ class User(Base):
         self.email = email
 
     def check_password(self, password: str) -> bool:
+        """
+        Проверка пароля пользователя
+        :return: True если пароль верный, False иначе
+        """
         return pbkdf2_sha256.verify(password, str(self.password_hash))

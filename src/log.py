@@ -10,6 +10,11 @@ from src.constants import LOG_FILE
 
 
 def init_logger() -> None:
+    """
+    Настройка структурированного логирования через structlog
+    :return: None
+    """
+
     def fbl(
         logger: logging.Logger,
         _method_name: str,

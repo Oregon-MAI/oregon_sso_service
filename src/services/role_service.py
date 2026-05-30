@@ -24,6 +24,10 @@ from src.data.schemas.role import RoleCreateDto, RoleDeleteDto, RoleDto, RoleUpd
 
 
 async def roles() -> list[RoleDto]:
+    """
+    Получение списка всех ролей из бд
+    :return: список объектов RoleDto с данными ролей
+    """
     try:
         roles_arr: list[Role] = await get_roles()
         if roles_arr is None:
@@ -43,6 +47,10 @@ async def roles() -> list[RoleDto]:
 
 
 async def role(id: UUID) -> RoleDto:
+    """
+    Получение роли по id
+    :return: объект RoleDto с данными роли
+    """
     try:
         role: Role = await get_role(id)
         if role is None:
@@ -60,6 +68,10 @@ async def role(id: UUID) -> RoleDto:
 
 
 async def create_role(role_in: RoleCreateDto, current_user: UUID) -> dict[str, str]:
+    """
+    Создание новой роли с проверкой прав администратора
+    :return: результат операции
+    """
     try:
         auth_user: User = await get_user_by_id(current_user)
         if auth_user is None:
@@ -79,6 +91,10 @@ async def create_role(role_in: RoleCreateDto, current_user: UUID) -> dict[str, s
 
 
 async def update_role(role_in: RoleUpdateDto, current_user: UUID) -> dict[str, str]:
+    """
+    Обновление данных роли с проверкой прав администратора
+    :return: результат операции
+    """
     try:
         auth_user: User = await get_user_by_id(current_user)
         if auth_user is None:
@@ -96,6 +112,10 @@ async def update_role(role_in: RoleUpdateDto, current_user: UUID) -> dict[str, s
 
 
 async def delete_role(role_in: RoleDeleteDto, current_user: UUID) -> dict[str, str]:
+    """
+    Удаление роли с проверкой прав администратора
+    :return: результат операции
+    """
     try:
         auth_user: User = await get_user_by_id(current_user)
         if auth_user is None:

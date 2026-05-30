@@ -8,6 +8,10 @@ from src.data.models.user_role import UserRole
 
 
 class Role(Base):
+    """
+    Модель роли
+    """
+
     __tablename__ = "roles"
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
     name = Column(String(20), index=True, nullable=False)
