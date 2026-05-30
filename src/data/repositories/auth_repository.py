@@ -12,17 +12,29 @@ async_session = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_c
 
 
 async def get_token(id: UUID) -> Token:
+    """
+    Получение токена по id из бд
+    :return: Token
+    """
     async with async_session() as session, session.begin():
         result = await session.execute(select(Token).where(Token.id == id).options())
         return result.scalar_one()
 
 
 async def insert_token(new_token: Token) -> None:
+    """
+    Добавление нового токена в бд
+    :return: None
+    """
     async with async_session() as session, session.begin():
         session.add(new_token)
 
 
 async def update_token(token: Token) -> None:
+    """
+    Обновление статуса токена в бд
+    :return: None
+    """
     async with async_session() as session, session.begin():
         result = await session.execute(select(Token).where(Token.id == token.id).options())
         token_to_update: Token = result.scalar_one()

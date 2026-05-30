@@ -21,6 +21,10 @@ from src.data.schemas.user import UserLoginDto
 
 
 async def login(user_in: UserLoginDto) -> dict[str, Any]:
+    """
+    Аутентификация пользователя и генерация токенов
+    :return: словарь с профилем пользователя и JWT токенами
+    """
     try:
         user: User = await get_user_by_login(user_in.login)
         if user_in.login == user.login and user.check_password(user_in.password):
@@ -50,6 +54,10 @@ async def login(user_in: UserLoginDto) -> dict[str, Any]:
 
 
 async def refresh(current_user: UUID, token: Token) -> dict[str, str]:
+    """
+    Генерация новой пары токенов при использовании refresh токена
+    :return: словарь с новыми access и refresh токенами
+    """
     try:
         user: User = await get_user_by_id(current_user)
         id_refresh: UUID = uuid4()
@@ -73,6 +81,10 @@ async def refresh(current_user: UUID, token: Token) -> dict[str, str]:
 
 
 async def create_jwt(data: dict, type: str) -> str:
+    """
+    Создание JWT токена с указанными данными и типом
+    :return: JWT токен
+    """
     try:
         encode_data = data.copy()
         time = datetime.datetime.now(datetime.UTC)
@@ -89,6 +101,10 @@ async def create_jwt(data: dict, type: str) -> str:
 
 
 async def validate_token(token: str = Depends(SCHEME)) -> dict[str, Any]:
+    """
+    Проверка валидности и срока действия JWT токена
+    :return: результат валидации
+    """
     try:
         jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
         return {
@@ -111,6 +127,10 @@ async def validate_token(token: str = Depends(SCHEME)) -> dict[str, Any]:
 
 
 async def get_refresh_tokens_data(token: str = Depends(SCHEME)) -> tuple[Token, UUID]:
+    """
+    Извлечение данных из refresh токена и проверка его в базе
+    :return: кортеж с объектом токена из бд и id пользователя
+    """
     try:
         data: dict[str, Any] = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
         token_from_db: Token = await get_token(UUID(data.get("id")))
@@ -124,6 +144,10 @@ async def get_refresh_tokens_data(token: str = Depends(SCHEME)) -> tuple[Token, 
 
 
 async def get_access_tokens_data(token: str = Depends(SCHEME)) -> UUID:
+    """
+    Извлечение id пользователя из access токена
+    :return: UUID пользователя
+    """
     try:
         data: dict[str, Any] = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
         return UUID(data.get("id"))
@@ -131,5 +155,3 @@ async def get_access_tokens_data(token: str = Depends(SCHEME)) -> UUID:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="The token has expired"
         ) from e
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token") from e

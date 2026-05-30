@@ -7,6 +7,10 @@ from opentelemetry.trace import Tracer
 
 
 def init(name: str, endpoint: str) -> Tracer:
+    """
+    Инициализация провайдера трассировки OpenTelemetry
+    :return: объект Tracer
+    """
     provider = TracerProvider(resource=Resource(attributes={"service.name": name}))
     processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=endpoint, insecure=True))
     provider.add_span_processor(processor)

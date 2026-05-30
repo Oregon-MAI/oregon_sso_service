@@ -10,7 +10,15 @@ from src.metrics import ERRORS_TOTAL, REQUEST_DURATION, REQUESTS_TOTAL
 
 
 class REDMetricsMiddleware(BaseHTTPMiddleware):
+    """
+    Middleware для сбора RED-метрик (Request rate, Error rate, Duration)
+    """
+
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        """
+        Обработка запроса и запись метрик
+        :return: HTTP ответ
+        """
         start_time = time.perf_counter()
         endpoint = request.url.path
         method = request.method

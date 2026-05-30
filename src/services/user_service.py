@@ -23,6 +23,10 @@ from src.services.security_service import create_jwt
 
 
 async def users() -> list[UserDto]:
+    """
+    Получение списка всех пользователей из базы данных
+    :return: список объектов UserDto с данными пользователей
+    """
     try:
         users_arr: list[User] = await get_users()
         users_dto_arr: list[UserDto] = [
@@ -47,6 +51,10 @@ async def users() -> list[UserDto]:
 
 
 async def user(id: UUID) -> UserDto:
+    """
+    Получение пользователя по идентификатору
+    :return: объект UserDto с данными пользователя
+    """
     try:
         us = await get_user_by_id(id)
         return UserDto(
@@ -67,6 +75,10 @@ async def user(id: UUID) -> UserDto:
 
 
 async def create_user(user_in: UserCreateDto) -> dict[str, str]:
+    """
+    Создание нового пользователя и генерация токенов
+    :return: access и refresh
+    """
     try:
         id_us: UUID = uuid4()
         user: User = User(
@@ -90,6 +102,10 @@ async def create_user(user_in: UserCreateDto) -> dict[str, str]:
 
 
 async def change_role(data: UserConnectRoleDto, current_user: UUID) -> dict[str, str]:
+    """
+    Добавление роли пользователю с проверкой прав администратора
+    :return: результат операции
+    """
     try:
         auth_user: User = await get_user_by_id(current_user)
         if any(role.name == ADMIN_USERNAME for role in list(auth_user.roles)):
@@ -116,6 +132,10 @@ async def change_role(data: UserConnectRoleDto, current_user: UUID) -> dict[str,
 
 
 async def update_user(user_in: UserUpdateDto, current_user: UUID) -> dict[str, str]:
+    """
+    Обновление данных пользователя с проверкой прав администратора
+    :return: результат операции
+    """
     try:
         auth_user: User = await get_user_by_id(current_user)
         if any(role.name == ADMIN_USERNAME for role in list(auth_user.roles)):
@@ -131,6 +151,10 @@ async def update_user(user_in: UserUpdateDto, current_user: UUID) -> dict[str, s
 
 
 async def delete_user(user_in: UserDeleteDto, current_user: UUID) -> dict[str, str]:
+    """
+    Удаление пользователя с проверкой прав администратора
+    :return: результат операции
+    """
     try:
         auth_user: User = await get_user_by_id(current_user)
         if any(role.name == ADMIN_USERNAME for role in list(auth_user.roles)):

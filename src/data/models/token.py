@@ -7,6 +7,10 @@ from src.data.models.base import Base
 
 
 class Token(Base):
+    """
+    Модель токена
+    """
+
     __tablename__ = "tokens"
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
     token = Column(Text, index=True, nullable=False)
