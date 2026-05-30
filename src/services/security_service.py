@@ -155,3 +155,5 @@ async def get_access_tokens_data(token: str = Depends(SCHEME)) -> UUID:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="The token has expired"
         ) from e
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token") from e
